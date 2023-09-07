@@ -5,8 +5,8 @@ module "asg" {
   name = "example-asg"
 
   min_size                  = 0
-  max_size                  = 2
-  desired_capacity          = 2
+  max_size                  = 1
+  desired_capacity          = 1
   wait_for_capacity_timeout = 0
   health_check_type         = "EC2"
   key_name                  = "general_key"
@@ -20,7 +20,7 @@ module "asg" {
 
   image_id          = data.aws_ami.latest_amazon_linux.id
   instance_type     = "t2.micro"
-  ebs_optimized     = null
+  ebs_optimized     = false
   enable_monitoring = false
 
   # IAM role & instance profile
@@ -43,10 +43,6 @@ module "asg" {
     cpu_credits = "standard"
   }
 
-  instance_market_options = {
-    market_type = "spot"
-  }
-
   network_interfaces = [
     {
       device_index    = 0
@@ -63,19 +59,10 @@ module "asg" {
       ebs = {
         delete_on_termination = true
         encrypted             = true
-        volume_size           = 20
+        volume_size           = 8
         volume_type           = "gp3"
       }
-      }, {
-      device_name = "/dev/sda1"
-      no_device   = true
-      ebs = {
-        delete_on_termination = true
-        encrypted             = true
-        volume_size           = 30
-        volume_type           = "gp3"
       }
-    }
   ]
 
   metadata_options = {
