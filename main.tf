@@ -5,8 +5,8 @@ module "asg" {
   name = "example-asg"
 
   min_size                  = 0
-  max_size                  = 1
-  desired_capacity          = 1
+  max_size                  = 0
+  desired_capacity          = 0
   wait_for_capacity_timeout = 0
   health_check_type         = "EC2"
   key_name                  = "general_key"
@@ -76,62 +76,43 @@ module "asg" {
   }
 }
 
-# module "alb" {
-#   source  = "terraform-aws-modules/alb/aws"
-#   version = "~> 8.0"
+module "alb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "8.0"
 
-#   name = "my-alb"
+  name = "my-alb"
 
-#   load_balancer_type = "application"
+  load_balancer_type = "application"
 
-#   vpc_id          = module.vpc.vpc_id
-#   subnets         = module.vpc.public_subnets
-#   security_groups = module.web_server_sg.security_group_id
+  vpc_id          = module.vpc.vpc_id
+  subnets         = module.vpc.public_subnets
+  security_groups = [module.web_server_sg.security_group_id]
 
-#   access_logs = {
-#     bucket = "site-estatico-teste-lulinha"
-#   }
+  access_logs = {
+    bucket = "site-estatico-teste-lulinha"
+  }
 
-#   target_groups = [
-#     {
-#       name_prefix      = "pref-"
-#       backend_protocol = "HTTP"
-#       backend_port     = 80
-#       target_type      = "instance"
-#       targets = {
-#         my_target = {
-#           target_id = "i-0123456789abcdefg"
-#           port      = 80
-#         }
-#         my_other_target = {
-#           target_id = "i-a1b2c3d4e5f6g7h8i"
-#           port      = 8080
-#         }
-#       }
-#     }
-#   ]
+  target_groups = [
+    {
+      name_prefix      = "pref-"
+      backend_protocol = "HTTP"
+      backend_port     = 80
+      target_type      = "instance"
+    }
+  ]
 
-#   https_listeners = [
-#     {
-#       port               = 443
-#       protocol           = "HTTPS"
-#       certificate_arn    = "arn:aws:iam::123456789012:server-certificate/test_cert-123456789012"
-#       target_group_index = 0
-#     }
-#   ]
+  http_tcp_listeners = [
+    {
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
+  ]
 
-#   http_tcp_listeners = [
-#     {
-#       port               = 80
-#       protocol           = "HTTP"
-#       target_group_index = 0
-#     }
-#   ]
-
-#   tags = {
-#     Environment = "Test"
-#   }
-# }
+  tags = {
+    Environment = "Test"
+  }
+}
 
 # module "db" {
 #   source = "terraform-aws-modules/rds/aws"
