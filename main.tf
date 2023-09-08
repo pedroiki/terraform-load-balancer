@@ -5,13 +5,14 @@ module "asg" {
   name = "example-asg"
 
   min_size                  = 0
-  max_size                  = 0
-  desired_capacity          = 0
+  max_size                  = 2
+  desired_capacity          = 2
   wait_for_capacity_timeout = 0
   health_check_type         = "EC2"
   key_name                  = "general_key"
   vpc_zone_identifier       = module.vpc.public_subnets
   user_data                 = base64encode(file("./scripts/user_data.sh"))
+  target_group_arns         = module.alb.target_group_arns
 
   # Launch template
   launch_template_name        = "example-asg"
@@ -45,9 +46,10 @@ module "asg" {
 
   network_interfaces = [
     {
-      device_index    = 0
-      security_groups = ["sg-0b570186954e56494"]
-      subnet_id       = "subnet-05a144aec1bae7087"
+      device_index                = 0
+      security_groups             = [module.web_server_sg.security_group_id]
+      subnet_id                   = element(module.vpc.public_subnets, 0)
+      associate_public_ip_address = true
     }
   ]
 
@@ -62,7 +64,7 @@ module "asg" {
         volume_size           = 8
         volume_type           = "gp3"
       }
-      }
+    }
   ]
 
   metadata_options = {
@@ -87,10 +89,6 @@ module "alb" {
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.public_subnets
   security_groups = [module.web_server_sg.security_group_id]
-
-  access_logs = {
-    bucket = "site-estatico-teste-lulinha"
-  }
 
   target_groups = [
     {
