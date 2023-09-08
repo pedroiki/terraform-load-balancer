@@ -1,3 +1,6 @@
+## Diagram
+![Diagram](./doc/Simple%20Architecture.png)
+
 ## Requirements
 
 | Name | Version |
