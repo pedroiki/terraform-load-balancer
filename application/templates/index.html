@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Aplicação Web</title>
+</head>
+<body>
+    <h1>{{ mensagem }}</h1>
+    <form method="POST" action="/nome_aleatorio">
+        <input type="submit" value="Obter Nome Aleatório">
+    </form>
+    <p>Nome Aleatório: <span id="nome_aleatorio"></span></p>
+    <script>
+        document.querySelector('form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const response = await fetch('/nome_aleatorio', { method: 'POST' });
+            const nome = await response.text();
+            document.querySelector('#nome_aleatorio').textContent = nome;
+        });
+    </script>
+</body>
+</html>

@@ -6,11 +6,11 @@ module "asg" {
 
   min_size                  = 0
   max_size                  = 2
-  desired_capacity          = 1
+  desired_capacity          = 2
   wait_for_capacity_timeout = 0
   health_check_type         = "EC2"
   key_name                  = "general_key"
-  vpc_zone_identifier       = module.vpc.public_subnets
+  vpc_zone_identifier       = module.vpc.private_subnets
   user_data                 = base64encode(file("./scripts/user_data.sh"))
   target_group_arns         = module.alb.target_group_arns
 
@@ -49,7 +49,7 @@ module "asg" {
       device_index                = 0
       security_groups             = [module.web_server_sg.security_group_id]
       subnet_id                   = element(module.vpc.public_subnets, 0)
-      associate_public_ip_address = true
+      associate_public_ip_address = false
     }
   ]
 
@@ -106,76 +106,77 @@ module "alb" {
 
   tags = var.tags
 }
-# module "db" {
-#   source = "terraform-aws-modules/rds/aws"
 
-#   identifier = "demodb"
+module "db" {
+  source = "terraform-aws-modules/rds/aws"
 
-#   engine            = "mysql"
-#   engine_version    = "5.7"
-#   instance_class    = "db.t3a.large"
-#   allocated_storage = 5
+  identifier = "demodb"
 
-#   db_name  = "demodb"
-#   username = "user"
-#   port     = "3306"
+  engine            = "mysql"
+  engine_version    = "5.7"
+  instance_class    = "db.t2.micro"
+  allocated_storage = 5
 
-#   iam_database_authentication_enabled = true
+  db_name  = "demodb"
+  username = "user"
+  port     = "3306"
 
-#   vpc_security_group_ids = ["sg-12345678"]
+  iam_database_authentication_enabled = true
 
-#   maintenance_window = "Mon:00:00-Mon:03:00"
-#   backup_window      = "03:00-06:00"
+  vpc_security_group_ids = [module.mysql_security_group.security_group_id]
 
-#   # Enhanced Monitoring - see example for details on how to create the role
-#   # by yourself, in case you don't want to create it automatically
-#   monitoring_interval    = "30"
-#   monitoring_role_name   = "MyRDSMonitoringRole"
-#   create_monitoring_role = true
+  maintenance_window = "Mon:00:00-Mon:03:00"
+  backup_window      = "03:00-06:00"
 
-#   tags = {
-#     Owner       = "user"
-#     Environment = "dev"
-#   }
+  # Enhanced Monitoring - see example for details on how to create the role
+  # by yourself, in case you don't want to create it automatically
+  monitoring_interval    = "30"
+  monitoring_role_name   = "MyRDSMonitoringRole"
+  create_monitoring_role = true
 
-#   # DB subnet group
-#   create_db_subnet_group = true
-#   subnet_ids             = ["subnet-12345678", "subnet-87654321"]
+  tags = {
+    Owner       = "user"
+    Environment = "dev"
+  }
 
-#   # DB parameter group
-#   family = "mysql5.7"
+  # DB subnet group
+  create_db_subnet_group = true
+  subnet_ids             = module.vpc.database_subnets
 
-#   # DB option group
-#   major_engine_version = "5.7"
+  # DB parameter group
+  family = "mysql5.7"
 
-#   # Database Deletion Protection
-#   deletion_protection = true
+  # DB option group
+  major_engine_version = "5.7"
 
-#   parameters = [
-#     {
-#       name  = "character_set_client"
-#       value = "utf8mb4"
-#     },
-#     {
-#       name  = "character_set_server"
-#       value = "utf8mb4"
-#     }
-#   ]
+  # Database Deletion Protection
+  deletion_protection = true
 
-#   options = [
-#     {
-#       option_name = "MARIADB_AUDIT_PLUGIN"
+  parameters = [
+    {
+      name  = "character_set_client"
+      value = "utf8mb4"
+    },
+    {
+      name  = "character_set_server"
+      value = "utf8mb4"
+    }
+  ]
 
-#       option_settings = [
-#         {
-#           name  = "SERVER_AUDIT_EVENTS"
-#           value = "CONNECT"
-#         },
-#         {
-#           name  = "SERVER_AUDIT_FILE_ROTATIONS"
-#           value = "37"
-#         },
-#       ]
-#     },
-#   ]
-# }
+  options = [
+    {
+      option_name = "MARIADB_AUDIT_PLUGIN"
+
+      option_settings = [
+        {
+          name  = "SERVER_AUDIT_EVENTS"
+          value = "CONNECT"
+        },
+        {
+          name  = "SERVER_AUDIT_FILE_ROTATIONS"
+          value = "37"
+        },
+      ]
+    },
+  ]
+}
