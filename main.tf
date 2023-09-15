@@ -105,7 +105,7 @@ module "alb" {
   ]
 
   tags = var.tags
-
+}
 # module "db" {
 #   source = "terraform-aws-modules/rds/aws"
 
