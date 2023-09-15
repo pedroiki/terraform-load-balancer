@@ -1,3 +1,4 @@
+# Virtual Private Cloud
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -19,22 +20,4 @@ module "vpc" {
     Arquiteto   = "Dallison Lima"
   }
 }
-module "web_server_sg" {
-  source = "terraform-aws-modules/security-group/aws//modules/http-80"
 
-  name        = "web-server"
-  description = "Security group for web-server with HTTP ports open within VPC"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-}
-
-module "mysql_security_group" {
-  source  = "terraform-aws-modules/security-group/aws//modules/mysql"
-  version = "~> 5.0"
-
-  name = "sg_mysql_rds"
-  vpc_id = module.vpc.vpc_id
-
-  # omitted...
-}
