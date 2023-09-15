@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Instala o Apache (httpd)
 sudo yum install httpd -y
 

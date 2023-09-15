@@ -12,7 +12,7 @@ module "asg" {
   health_check_type         = "EC2"
   key_name                  = "general_key"
   vpc_zone_identifier       = module.vpc.private_subnets
-  user_data                 = base64encode(file("./scripts/user_data.sh"))
+  user_data                 = base64encode(file("./scripts/new_user_data.sh"))
   target_group_arns         = module.alb.target_group_arns
 
   # Launch template

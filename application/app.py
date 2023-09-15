@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 # Configuração da conexão com o banco de dados
 db = pymysql.connect(
-    host='',  # Host onde o MariaDB está rodando
+    host='database-2.csoyupd1yljy.us-east-1.rds.amazonaws.com',  # Host onde o MariaDB está rodando
     user='admin',       # Nome de usuário do banco de dados
-    password='',  # Senha do banco de dados
+    password='AkOJllP5n7ieqTw149L0',  # Senha do banco de dados
     database='nomes'   # Nome do banco de dados que você deseja conectar
 )
 
