@@ -6,7 +6,7 @@ module "asg" {
 
   min_size                  = 0
   max_size                  = 2
-  desired_capacity          = 2
+  desired_capacity          = 1
   wait_for_capacity_timeout = 0
   health_check_type         = "EC2"
   key_name                  = "general_key"
@@ -72,10 +72,7 @@ module "asg" {
     http_put_response_hop_limit = 32
   }
 
-  tags = {
-    Environment = "dev"
-    Project     = "megasecret"
-  }
+  tags = var.tags
 }
 
 module "alb" {
@@ -107,10 +104,7 @@ module "alb" {
     }
   ]
 
-  tags = {
-    Environment = "Test"
-  }
-}
+  tags = var.tags
 
 # module "db" {
 #   source = "terraform-aws-modules/rds/aws"

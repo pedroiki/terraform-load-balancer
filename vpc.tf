@@ -17,7 +17,6 @@ module "vpc" {
     Arquiteto   = "Dallison Lima"
   }
 }
-
 module "web_server_sg" {
   source = "terraform-aws-modules/security-group/aws//modules/http-80"
 
